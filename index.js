@@ -1,6 +1,7 @@
 'use strict'
 
 let fs = require('fs');
+
 let filename = process.argv[2];
 
 if (!filename) {
@@ -45,9 +46,9 @@ function parseOrders(lines) {
     let startIdx = 1 + i * 3;
     let [r, c] = lines[startIdx].splitInt(' ');
     let productsRaw = lines[startIdx + 2].splitInt(' ');
-    let products = new Array(input.products.length).fill(0);
-    productsRaw.forEach(prodIndex => products[prodIndex]++);
-    input.orders.push({i, r, c, products});
+    let quantities = new Array(input.products.length).fill(0);
+    productsRaw.forEach(prodIndex => quantities[prodIndex]++);
+    input.orders.push({i, r, c, quantities});
   }
 }
 
