@@ -1,6 +1,8 @@
 'use strict'
 
-let fs = require('fs');
+let fs = require('fs'),
+    exportSolution = require('./export-solution'),
+    nearestOrder = require('./nearest-order');
 
 let filename = process.argv[2];
 
@@ -59,5 +61,5 @@ fs.readFile(filename, (err, data) => {
   parseProducts(lines[2]);
   let whCount = parseWarehouses(lines);
   parseOrders(lines.slice(4 + whCount * 2));
-  console.log(JSON.stringify(input));
+  exportSolution(nearestOrder(input));
 });
