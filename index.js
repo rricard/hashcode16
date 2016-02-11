@@ -61,5 +61,8 @@ fs.readFile(filename, (err, data) => {
   parseProducts(lines[2]);
   let whCount = parseWarehouses(lines);
   parseOrders(lines.slice(4 + whCount * 2));
-  exportSolution(nearestOrder(input));
+  exportSolution(nearestOrder(input.map,
+                              input.warehouses,
+                              input.products,
+                              input.orders));
 });
