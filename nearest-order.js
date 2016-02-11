@@ -63,8 +63,7 @@ module.exports = function(map, warehouses, productTypes, orders) {
         let chosenOScore = 0;
         orders.filter(o => {
           return !!o &&
-            o.quantities.filter((q, type) => q > chosenW.quantities[type]).length < 1 &&
-            o.quantities.reduce((sum, q, type) => sum + q * productTypes[type], 0) <= map.maxPayload; // We should be able to split between drones
+            o.quantities.filter((q, type) => q > chosenW.quantities[type]).length < 1
         }).forEach(o => {
           const pScore = o.quantities.reduce((q, type) => scoreQuantity(productTypes[type], q));
           const oScore = betterOrder(pScore, euclideanDist(o, chosenW));
@@ -75,11 +74,19 @@ module.exports = function(map, warehouses, productTypes, orders) {
         });
         drone.nextOrder = chosenO;
         if(drone.nextOrder) {
+          let loadedQuant = 0;
           drone.nextOrder.quantities.forEach((q, type) => {
-            commands.push({drone: drone.i, type: "L", args: [chosenW.i, type, q]});
-            chosenW.quantities[type] -= q;
-            drone.idle += 1;
+            loadedQuant += q * productTypes[type];
+            if(loadedQuant <= map.maxPayload) {
+              commands.push({drone: drone.i, type: "L", args: [chosenW.i, type, q]});
+              drone.nextOrder.quantities[type] = 0;
+              chosenW.quantities[type] -= q;
+              drone.idle += 1;
+            }
           });
+          if(loadedQuant <= map.maxPayload) {
+            orders[drone.nextOrder.i] = null;
+          }
           drone.idle += euclideanDist(drone.nextOrder, chosenW) - 1;
         } else {
           commands.push({drone: drone.i, type: "W", args: [1]});
