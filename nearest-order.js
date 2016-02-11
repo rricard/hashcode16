@@ -1,11 +1,11 @@
 "use strict";
 /* @flow weak */
 
+const range = require("range").range;
+
 const ALPHA = 1;
 
 const BETA = 1;
-
-const MAX_WAITING = 1000;
 
 function betterWarehouse(pScore, d) {
   return d == 0 ? pScore : ALPHA * pScore / d;
@@ -26,14 +26,16 @@ function euclideanDist(p1, p2) {
 }
 
 function initDrones(nd, initW) {
-  return new Array(nd).map((_, i) => ({
-    r: initW.r,
-    c: initW.c,
-    i: i,
-    idle: 0,
-    products: [],
-    nextOrder: null
-  }));
+  return range(0, nd).map((i) => {
+    return {
+      r: initW.r,
+      c: initW.c,
+      i: i,
+      idle: 0,
+      products: [],
+      nextOrder: null
+    };
+  });
 }
 
 // {r, c, idle, products[{n, type}]}
@@ -74,20 +76,20 @@ module.exports = function(map, warehouses, productTypes, orders) {
         drone.nextOrder = chosenO;
         if(drone.nextOrder) {
           drone.nextOrder.quantities.forEach((q, type) => {
-            commands.push({d: drone.i, type: "L", args: [chosenW.i, type, q]});
+            commands.push({drone: drone.i, type: "L", args: [chosenW.i, type, q]});
             chosenW.quantities[type] -= q;
             drone.idle += 1;
           });
           drone.idle += euclideanDist(drone.nextOrder, chosenW) - 1;
         } else {
-          commands.push({d: drone.i, type: "W", args: [1]});
+          commands.push({drone: drone.i, type: "W", args: [1]});
         }
       }
       // Case #2: Idle drone with an order, AUTO
       else if(drone.idle < 1 && drone.nextOrder) {
         orders[drone.nextOrder.i] = null;
         drone.nextOrder.quantities.forEach((q, type) => {
-          commands.push({d: drone.i, type: "D", args: [drone.nextOrder.i, type, q]});
+          commands.push({drone: drone.i, type: "D", args: [drone.nextOrder.i, type, q]});
           drone.idle += 1;
         });
         drone.idle += euclideanDist(drone, drone.nextOrder) - 1;

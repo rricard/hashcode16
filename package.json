@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/rricard/hashcode16/issues"
   },
-  "homepage": "https://github.com/rricard/hashcode16#readme"
+  "homepage": "https://github.com/rricard/hashcode16#readme",
+  "dependencies": {
+    "range": "0.0.3"
+  }
 }
