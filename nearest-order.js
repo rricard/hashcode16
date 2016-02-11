@@ -7,6 +7,8 @@ const ALPHA = 1;
 
 const BETA = 1;
 
+const MAX_WAITING = 1000;
+
 function betterWarehouse(pScore, d) {
   return d == 0 ? pScore : ALPHA * pScore / d;
 }
@@ -43,7 +45,12 @@ function initDrones(nd, initW) {
 module.exports = function(map, warehouses, productTypes, orders) {
   let drones = initDrones(map.drones, warehouses[0]);
   let commands = [];
+  let nbOrders = 0;
+  let waiting = 0;
   for(let t = 0; t < map.turns; t += 1) {
+    if(nbOrders >= orders.length || waiting > MAX_WAITING) {
+      return commands;
+    }
     drones.forEach(drone => {
       // Case #1: Idle drone without an order (=> MUST LOAD, CHOOSE AN O&W)
       if(drone.idle < 1 && !drone.nextOrder) {
@@ -98,6 +105,7 @@ module.exports = function(map, warehouses, productTypes, orders) {
         orders[drone.nextOrder.i] = null;
         drone.nextOrder.quantities.forEach((q, type) => {
           commands.push({drone: drone.i, type: "D", args: [drone.nextOrder.i, type, q]});
+          nbOrders += 1;
           drone.idle += 1;
         });
         drone.idle += euclideanDist(drone, drone.nextOrder) - 1;
@@ -106,6 +114,7 @@ module.exports = function(map, warehouses, productTypes, orders) {
       // Case #3: Not idle, AUTO
       else {
         drone.idle -= 1;
+        waiting += 1;
       }
     });
   }
