@@ -1,0 +1,67 @@
+The example in the problem statement produces the following object:
+
+{
+  "grid": {
+    "rows": 100,
+    "cols": 100,
+    "drones": 3,
+    "turns": 50,
+    "maxPayload": 500
+  },
+  "products": [
+    100,
+    5,
+    450
+  ],
+  "warehouses": [
+    {
+      "r": 0,
+      "c": 0,
+      "quantities": [
+        5,
+        1,
+        0
+      ]
+    },
+    {
+      "r": 5,
+      "c": 5,
+      "quantities": [
+        0,
+        10,
+        2
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "r": 1,
+      "c": 1,
+      "products": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "r": 3,
+      "c": 3,
+      "products": [
+        3,
+        0,
+        0
+      ]
+    },
+    {
+      "r": 5,
+      "c": 6,
+      "products": [
+        0,
+        0,
+        1
+      ]
+    }
+  ]
+}
+
+
