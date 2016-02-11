@@ -26,9 +26,10 @@ function euclideanDist(p1, p2) {
 }
 
 function initDrones(nd, initW) {
-  return new Array(nd).map(() => ({
+  return new Array(nd).map((_, i) => ({
     r: initW.r,
     c: initW.c,
+    i: i,
     idle: 0,
     products: [],
     nextOrder: null
@@ -38,11 +39,10 @@ function initDrones(nd, initW) {
 // {r, c, idle, products[{n, type}]}
 
 module.exports = function(map, warehouses, productTypes, orders) {
-  let waiting = 0;
   let drones = initDrones(map.drones, warehouses[0]);
   let commands = [];
-  while(orders.length > 0 && waiting < MAX_WAITING) {
-    drones.forEach((drone, di) => {
+  for(let t = 0; t < turns; t += 1) {
+    drones.forEach(drone => {
       // Case #1: Idle drone without an order (=> MUST LOAD, CHOOSE AN O&W)
       if(drone.idle < 1 && !drone.nextOrder) {
         // 1. Choose the best warehouse
@@ -74,25 +74,23 @@ module.exports = function(map, warehouses, productTypes, orders) {
         drone.nextOrder = chosenO;
         if(drone.nextOrder) {
           drone.nextOrder.quantities.forEach((q, type) => {
-            commands.push({d: di, type: "L", args: [chosenW.i, type, q]});
+            commands.push({d: drone.i, type: "L", args: [chosenW.i, type, q]});
             chosenW.quantities[type] -= q;
             drone.idle += 1;
           });
-          drone.idle += euclideanDist(drone.nextOrder, chosenW);
+          drone.idle += euclideanDist(drone.nextOrder, chosenW) - 1;
         } else {
-          commands.push({d: di, type: "W", args: [1]});
-          drone.idle += 1;
-          waiting += 1;
+          commands.push({d: drone.i, type: "W", args: [1]});
         }
       }
       // Case #2: Idle drone with an order, AUTO
       else if(drone.idle < 1 && drone.nextOrder) {
         orders[drone.nextOrder.i] = null;
         drone.nextOrder.quantities.forEach((q, type) => {
-          commands.push({d: di, type: "D", args: [drone.nextOrder.i, type, q]});
+          commands.push({d: drone.i, type: "D", args: [drone.nextOrder.i, type, q]});
           drone.idle += 1;
         });
-        drone.idle += euclideanDist(drone, drone.nextOrder);
+        drone.idle += euclideanDist(drone, drone.nextOrder) - 1;
         drone.nextOrder = null;
       }
       // Case #3: Not idle, AUTO
