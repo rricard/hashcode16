@@ -34,7 +34,7 @@ function parseWarehouses(lines) {
     let startIdx = 4 + i * 2;
     let [r, c] = lines[startIdx].splitInt(' ');
     let quantities = lines[startIdx + 1].splitInt(' ');
-    input.warehouses.push({r, c, quantities});
+    input.warehouses.push({i, r, c, quantities});
   }
   return whCount;
 }
@@ -47,7 +47,7 @@ function parseOrders(lines) {
     let productsRaw = lines[startIdx + 2].splitInt(' ');
     let products = new Array(input.products.length).fill(0);
     productsRaw.forEach(prodIndex => products[prodIndex]++);
-    input.orders.push({r, c, products});
+    input.orders.push({i, r, c, products});
   }
 }
 
