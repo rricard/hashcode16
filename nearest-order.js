@@ -76,11 +76,12 @@ module.exports = function(map, warehouses, productTypes, orders) {
         if(drone.nextOrder) {
           let loadedQuant = 0;
           drone.nextOrder.quantities.forEach((q, type) => {
-            loadedQuant += q * productTypes[type];
+            const take = Math.min(q, (map.maxPayload - loadedQuant) / productTypes[type]);
+            loadedQuant += take * productTypes[type];
             if(loadedQuant <= map.maxPayload) {
-              commands.push({drone: drone.i, type: "L", args: [chosenW.i, type, q]});
-              drone.nextOrder.quantities[type] = 0;
-              chosenW.quantities[type] -= q;
+              commands.push({drone: drone.i, type: "L", args: [chosenW.i, type, take]});
+              drone.nextOrder.quantities[type] -= take;
+              chosenW.quantities[type] -= take;
               drone.idle += 1;
             }
           });
