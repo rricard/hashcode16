@@ -41,7 +41,7 @@ function initDrones(nd, initW) {
 module.exports = function(map, warehouses, productTypes, orders) {
   let drones = initDrones(map.drones, warehouses[0]);
   let commands = [];
-  for(let t = 0; t < turns; t += 1) {
+  for(let t = 0; t < map.turns; t += 1) {
     drones.forEach(drone => {
       // Case #1: Idle drone without an order (=> MUST LOAD, CHOOSE AN O&W)
       if(drone.idle < 1 && !drone.nextOrder) {
