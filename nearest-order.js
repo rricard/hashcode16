@@ -68,10 +68,12 @@ module.exports = function(map, warehouses, productTypes, orders) {
         // 2. Choose the best order from this warehouse
         let chosenO = null;
         let chosenOScore = 0;
-        orders.filter(o => {
-          return !!o &&
-            o.quantities.filter((q, type) => q > chosenW.quantities[type]).length < 1
-        }).forEach(o => {
+        orders.forEach(o => {
+          if(!o ||
+            o.quantities.filter((q, type) => q > chosenW.quantities[type]).length >= 1) {
+            return;
+          }
+
           const pScore = o.quantities.reduce((q, type) => scoreQuantity(productTypes[type], q));
           const oScore = betterOrder(pScore, euclideanDist(o, chosenW));
           if(oScore > chosenOScore) {
