@@ -38,7 +38,7 @@ function initDrones(nd, initW) {
 
 // {r, c, idle, products[{n, type}]}
 
-module.exports = function(map, warehouses, productTypes, orders) {
+module.exports = function({map, warehouses, productTypes, orders}) {
   let drones = initDrones(map.drones, warehouses[0]);
   let commands = [];
   for(let t = 0; t < map.turns; t += 1) {
